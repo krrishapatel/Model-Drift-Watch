@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DriftRadar</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>DriftRadar</h1>
+      <p>ML data drift + model health monitor</p>
+    </header>
+
+    <section class="cards">
+      <div class="card">
+        <h3>Batches</h3>
+        <div id="batch-count">-</div>
+      </div>
+      <div class="card">
+        <h3>Reference Batch</h3>
+        <div id="reference-batch">-</div>
+      </div>
+      <div class="card">
+        <h3>Latest Model MAPE</h3>
+        <div id="latest-mape">-</div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="panel">
+        <h2>Drift Metrics (PSI)</h2>
+        <canvas id="driftChart"></canvas>
+      </div>
+      <div class="panel">
+        <h2>Quality Metrics (Missing Rate)</h2>
+        <canvas id="qualityChart"></canvas>
+      </div>
+      <div class="panel">
+        <h2>Model Health (MAE/MAPE)</h2>
+        <canvas id="modelChart"></canvas>
+      </div>
+    </section>
+  </div>
+  <script src="/static/app.js"></script>
+</body>
+</html>
