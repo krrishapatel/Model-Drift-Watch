@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.pytest_cache/
+.ruff_cache/
+
+# Runtime state, not source. The repo used to carry a committed drift_radar.db
+# and a tree of .pyc files built for a Python version the Dockerfile does not use.
+*.db
+data/raw/
+data/models/
+sample_retail.csv
+sample_drifted.csv

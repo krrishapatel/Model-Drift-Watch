@@ -9,6 +9,14 @@ services:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
+    # depends_on alone only waits for the container to start, not for postgres to
+    # accept connections. The api creates its tables on startup, so on a cold
+    # `docker compose up` it lost the race and exited.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U drift -d driftradar"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
 
   redis:
     image: redis:7
@@ -28,8 +36,10 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
 
   worker:
     build: .
@@ -42,8 +52,10 @@ services:
     volumes:
       - .:/app
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
 
 volumes:
   db_data:

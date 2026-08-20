@@ -75,3 +75,48 @@ header p {
   margin: 0 0 12px;
   font-size: 16px;
 }
+
+.wide {
+  margin-bottom: 16px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+th {
+  text-align: left;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  padding: 6px 8px;
+}
+
+td {
+  padding: 6px 8px;
+  border-top: 1px solid #eee;
+  vertical-align: top;
+}
+
+.severity {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+.severity.high { color: #a3322b; }
+.severity.medium { color: #b3701e; }
+.severity.low { color: var(--muted); }
+
+.muted {
+  color: var(--muted);
+  margin: 4px 8px;
+}
+
+.error {
+  color: #a3322b;
+  font-weight: 600;
+}

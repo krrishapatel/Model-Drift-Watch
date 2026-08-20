@@ -12,4 +12,11 @@ rq==1.16.2
 redis==5.0.8
 jinja2==3.1.4
 aiofiles==24.1.0
+# docker-compose points DATABASE_URL at postgresql+psycopg2, and this was not
+# here, so every container failed on `import app.main` with ModuleNotFoundError
+# before it reached any application code.
+psycopg2-binary==2.9.9
 pytest==8.3.3
+# fastapi's TestClient needs it, and it is how the test suite drives the API.
+httpx==0.27.2
+ruff==0.6.9

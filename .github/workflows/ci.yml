@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: pytest -v
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install ruff==0.6.9
+      - run: ruff check .
+      - run: ruff format --check .
+
+  import-check:
+    # The app used to resolve ./frontend and ./data against the working
+    # directory, so it could only be imported from the repository root. Anywhere
+    # else, the static mount raised at import time.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: repo
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: repo/requirements.txt
+      - run: pip install -r repo/requirements.txt
+      - run: python -c "import app.main; print('imported from', __import__('os').getcwd())"
+        env:
+          PYTHONPATH: ${{ github.workspace }}/repo

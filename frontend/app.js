@@ -5,10 +5,13 @@ async function fetchJson(url) {
 }
 
 async function loadDashboard() {
-  const batches = await fetchJson("/batches");
-  const drift = await fetchJson("/drift");
-  const quality = await fetchJson("/quality");
-  const model = await fetchJson("/model_health");
+  const [batches, drift, quality, model, alerts] = await Promise.all([
+    fetchJson("/batches"),
+    fetchJson("/drift"),
+    fetchJson("/quality"),
+    fetchJson("/model_health"),
+    fetchJson("/alerts"),
+  ]);
 
   document.getElementById("batch-count").textContent = batches.length;
   const reference = batches.find(b => b.is_reference);
@@ -17,9 +20,33 @@ async function loadDashboard() {
   const latestMape = model.filter(m => m.metric === "mape").slice(-1)[0];
   document.getElementById("latest-mape").textContent = latestMape ? latestMape.value.toFixed(3) : "-";
 
+  renderAlerts(alerts);
   renderDriftChart(drift);
   renderQualityChart(quality);
   renderModelChart(model);
+}
+
+// Alerts were written to the database on every batch and never displayed. The
+// dashboard showed PSI bars and left it to you to know which ones crossed a
+// threshold.
+function renderAlerts(alerts) {
+  const open = alerts.filter(a => a.status === "open");
+  document.getElementById("alert-count").textContent = open.length;
+
+  const body = document.querySelector("#alerts tbody");
+  const empty = document.getElementById("alerts-empty");
+  body.innerHTML = "";
+  empty.hidden = alerts.length > 0;
+
+  for (const alert of alerts.slice(0, 50)) {
+    const row = body.insertRow();
+    row.insertCell().textContent = `#${alert.batch_id}`;
+    const severity = row.insertCell();
+    severity.textContent = alert.severity;
+    severity.className = `severity ${alert.severity}`;
+    row.insertCell().textContent = alert.type;
+    row.insertCell().textContent = alert.message;
+  }
 }
 
 function renderDriftChart(drift) {
@@ -66,6 +93,12 @@ function renderModelChart(model) {
   });
 }
 
+// A failed load used to log to the console and leave every card reading "-",
+// which looks the same as a running system with no data in it.
 loadDashboard().catch(err => {
   console.error(err);
+  const banner = document.createElement("p");
+  banner.className = "error";
+  banner.textContent = `Could not load the dashboard: ${err.message}`;
+  document.querySelector("header").append(banner);
 });

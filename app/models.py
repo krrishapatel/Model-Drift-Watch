@@ -1,6 +1,7 @@
-from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, ForeignKey, JSON
-from sqlalchemy.sql import func
+from sqlalchemy import JSON, Boolean, Column, DateTime, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
+
 from .db import Base
 
 
@@ -13,6 +14,10 @@ class Batch(Base):
     row_count = Column(Integer, nullable=False)
     schema_version = Column(String, nullable=False)
     schema_json = Column(JSON, nullable=False)
+    # What the uploader said this batch is: auto, reference, or current. Nullable
+    # so a database created before this column existed still reads; the code
+    # treats NULL as auto.
+    role = Column(String, default="auto", server_default="auto")
     is_reference = Column(Boolean, default=False, nullable=False)
     created_at = Column(DateTime, server_default=func.now())
 
